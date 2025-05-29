@@ -1,0 +1,16 @@
+jira:
+  license: ""
+  replicaCount: 1
+  image:
+    repository: atlassian/jira-software
+    tag: 8.22.1
+  service:
+    type: ClusterIP
+    port: 8080
+  database:
+    type: postgres
+    host: postgres.jira.svc.cluster.local
+    port: 5432
+    name: jira
+    username: jira
+    password: jira_password

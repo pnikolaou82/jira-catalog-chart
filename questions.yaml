@@ -1,0 +1,34 @@
+questions:
+- variable: jira.license
+  label: JIRA License Key
+  type: password
+  required: true
+  group: "Jira Configuration"
+  description: "Provide a valid JIRA license key"
+  default: ""
+
+- variable: jira.database.host
+  label: Database Host
+  type: string
+  required: true
+  group: "Database"
+  default: "postgres.jira.svc.cluster.local"
+
+- variable: jira.replicaCount
+  label: Number of Replicas
+  type: int
+  required: true
+  default: 1
+  group: "Jira Configuration"
+  min: 1
+  max: 10
+
+- variable: jira.service.type
+  label: Service Type
+  type: enum
+  options:
+    - ClusterIP
+    - NodePort
+    - LoadBalancer
+  required: true
+  default: ClusterIP

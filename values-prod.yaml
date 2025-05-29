@@ -1,0 +1,70 @@
+jira:
+  license: "REPLACE_WITH_PRODUCTION_LICENSE"
+  replicaCount: 3
+
+  image:
+    repository: atlassian/jira-software
+    tag: 8.22.1
+
+  service:
+    type: LoadBalancer
+    port: 8080
+
+  database:
+    type: postgres
+    host: rds-production-endpoint.amazonaws.com
+    port: 5432
+    name: jira_prod
+    username: jira_prod_user
+    password: jira_secure_prod_password
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+    hosts:
+      - host: jira.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - jira.example.com
+        secretName: jira-prod-tls
+
+  resources:
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+    requests:
+      cpu: "1"
+      memory: "2Gi"
+
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: fast-ssd
+
+  nodeSelector:
+    tier: production
+
+  tolerations:
+    - key: "env"
+      operator: "Equal"
+      value: "prod"
+      effect: "NoSchedule"
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                    - jira
+            topologyKey: "kubernetes.io/hostname"

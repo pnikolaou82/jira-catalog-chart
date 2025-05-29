@@ -1,0 +1,46 @@
+jira:
+  license: "REPLACE_WITH_STAGING_LICENSE"
+  replicaCount: 2
+
+  image:
+    repository: atlassian/jira-software
+    tag: 8.22.1
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  database:
+    type: postgres
+    host: postgres.staging.svc.cluster.local
+    port: 5432
+    name: jira_staging
+    username: staging_user
+    password: staging_pass
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+    hosts:
+      - host: jira-staging.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - jira-staging.example.com
+        secretName: jira-staging-tls
+
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: standard
